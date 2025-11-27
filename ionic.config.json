@@ -1,0 +1,7 @@
+{
+  "name": "IrideWorks",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
