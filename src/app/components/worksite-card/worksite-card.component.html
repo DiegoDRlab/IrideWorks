@@ -1,0 +1,12 @@
+<div class="worksite-card" (click)="goToDetailPage(worksite!)" [ngClass]="{'expanded':expanded}">
+  <img class="img-zoom" [src]="worksite!.imageBase64" alt="Logo" />
+  <div style="display: flex; flex-direction: column; padding: 20px 40px 20px 20px;">
+    <div class="worksite-title">
+      {{worksite?.name}}
+    </div>
+    <div class="worksite-subtitle">
+      {{worksite?.descriription}}
+    </div>
+  </div>
+  <ion-icon name="chevron-forward-outline" style="position: absolute; right: 5px; top: 55px; font-size: 40px; color: #666;"></ion-icon>
+</div>

@@ -34,4 +34,17 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+// @import '@ionic/angular/css/palettes/dark.system.css';
+
+:root {
+  color-scheme: light;
+}
+
+body.dark {
+  --ion-color-primary: var(--ion-color-primary);
+}
+
+.disable-swipe-back ion-nav,
+.disable-swipe-back ion-router-outlet {
+  --swipe-back-enabled: 0;
+}

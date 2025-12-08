@@ -9,17 +9,22 @@ export const routes: Routes = [
       {
         path: 'tab1',
         loadComponent: () =>
-          import('../tab1/tab1.page').then((m) => m.Tab1Page),
+          import('../onGoing/ongoing.page').then((m) => m.OngoingPage),
       },
       {
         path: 'tab2',
         loadComponent: () =>
-          import('../tab2/tab2.page').then((m) => m.Tab2Page),
+          import('../incoming/incoming.page').then((m) => m.IncomingPage),
       },
       {
         path: 'tab3',
         loadComponent: () =>
-          import('../tab3/tab3.page').then((m) => m.Tab3Page),
+          import('../completed/completed.page').then((m) => m.CompletedPage),
+      },
+      {
+        path: 'tab4',
+        loadComponent: () =>
+          import('../add/add.page').then((m) => m.AddPage),
       },
       {
         path: '',

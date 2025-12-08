@@ -3,17 +3,17 @@
   "short_name": "IrideWorks",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#3880ff",
+  "background_color": "#fff",
+  "theme_color": "#fff",
   "description": "IrideWorks",
   "icons": [
     {
-      "src": "assets/icon/196.png",
+      "src": "icon/196.png",
       "sizes": "196x196",
       "type": "image/png"
     },
     {
-      "src": "assets/icon/512.png",
+      "src": "icon/512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
