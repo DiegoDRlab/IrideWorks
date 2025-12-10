@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController, NavController, ToastController  } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonBackButton, IonButtons, IonCard,
-   IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem , IonIcon, IonList, IonCheckbox} from '@ionic/angular/standalone';
+   IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem , IonIcon, IonList, IonCheckbox, IonChip} from '@ionic/angular/standalone';
 import { Activity, Worksite, WorkstiteStatus } from '../models/worksite';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { WorksiteService } from '../services/worksite.service';
   selector: 'app-worksite-details',
   templateUrl: './worksite-details.page.html',
   styleUrls: ['./worksite-details.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonBackButton, IonButtons, IonCard,
+  imports: [IonHeader, IonToolbar, IonTitle, IonChip, IonContent, IonButton, IonBackButton, IonButtons, IonCard,
     IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem, IonIcon, IonList, IonCheckbox, CommonModule, FormsModule
   ],
   providers:[ModalController],
@@ -32,7 +32,10 @@ export class WorksiteDetailsPage implements OnInit {
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
     private cdr : ChangeDetectorRef,
-    private worksiteService : WorksiteService
+    private worksiteService : WorksiteService,
+    private navCtrl: NavController,
+    private toastCtrl: ToastController
+
   ) {}
 
 ngOnInit() {
@@ -41,6 +44,19 @@ ngOnInit() {
   if (nav?.extras?.state) {
     this.worksite = nav.extras.state['worksite'];
     this.cdr.markForCheck();
+  }
+}
+
+getStatusColor(status: string): string {
+  switch (status) {
+    case 'In Corso':
+      return 'primary';   // blu
+    case 'In Arrivo':
+      return 'tertiary';  // viola/azzurro chiaro
+    case 'Completato':
+      return 'success';   // verde
+    default:
+      return 'medium';    // grigio neutro
   }
 }
 
@@ -56,6 +72,7 @@ changeWorksiteStatus() {
     default:
       this.worksite.workstiteStatus = WorkstiteStatus.Incoming;
   }
+  this.worksiteService.updateWorksite(this.worksite);
   this.cdr.markForCheck();
 }
 
@@ -105,6 +122,35 @@ changeWorksiteStatus() {
             activity.description = res.description;
             this.worksiteService.updateWorksite(this.worksite);
           }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+ async confirmDelete() {
+    const alert = await this.alertCtrl.create({
+      header: 'Conferma eliminazione',
+      message: 'Sei sicuro di voler eliminare questo cantiere?',
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        { 
+          text: 'Elimina', 
+          handler: async () => {
+            await this.worksiteService.deleteWorksite(this.worksite.id);
+
+            // Mostra toast
+            const toast = await this.toastCtrl.create({
+              message: 'Cantiere eliminato con successo',
+              duration: 2000,
+              color: 'danger'
+            });
+            toast.present();
+
+            // Torna indietro come farebbe il back button
+            this.navCtrl.back();
+          } 
         }
       ]
     });

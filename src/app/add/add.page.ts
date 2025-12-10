@@ -25,7 +25,13 @@ export class AddPage implements OnInit {
   ngOnInit() {
   }
 
-  save() {
+  save() {    
+    this.worksite.startDate = this.worksite.startDate
+    ? new Date(this.worksite.startDate)
+    : undefined;
+    this.worksite.completedDate = this.worksite.completedDate
+    ? new Date(this.worksite.completedDate)
+    : undefined;
     this.worksiteService.addWorksite(this.worksite);
     this.isToastOpen= true;
     this.worksite = new Worksite();

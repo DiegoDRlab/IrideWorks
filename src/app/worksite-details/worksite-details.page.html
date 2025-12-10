@@ -3,6 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button color="danger" class="ion-margin-top" (click)="confirmDelete()">
+        Elimina
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 
   <div class="header-content">
@@ -25,12 +30,16 @@
       <p><strong>Indirizzo:</strong> {{ worksite?.address }}, {{ worksite?.city }}</p>
       <p><strong>Data inizio:</strong> {{ worksite?.startDate | date }}</p>
       <p><strong>Data completamento:</strong> {{ worksite?.completedDate | date }}</p>
-      <p><strong>Stato:</strong> {{ worksite?.workstiteStatus }}</p>
+      <p><strong>Stato:</strong>
+  <ion-chip [color]="getStatusColor(worksite!.workstiteStatus)">
+    <ion-label>{{ worksite?.workstiteStatus }}</ion-label>
+  </ion-chip>
+</p>
       <p><strong>Responsabile:</strong> {{ worksite?.manager }}</p>
       <p><strong>Note:</strong> {{ worksite?.notes }}</p>
-        <ion-button expand="block" color="secondary" (click)="changeWorksiteStatus()">
-    Cambia stato
-  </ion-button> 
+      <ion-button expand="block" color="secondary" (click)="changeWorksiteStatus()">
+        Cambia stato
+      </ion-button>
     </ion-card-content>
   </ion-card>
 
@@ -49,8 +58,8 @@
       <ion-label>
         <h2>{{ activity.name }}</h2>
         <p>{{ activity.description }}</p>
-        <p><strong>Dal:</strong> {{ activity.startDate | date }}  
-           <strong>Al:</strong> {{ activity.endDate | date }}
+        <p><strong>Dal:</strong> {{ activity.startDate | date }}
+          <strong>Al:</strong> {{ activity.endDate | date }}
         </p>
       </ion-label>
 

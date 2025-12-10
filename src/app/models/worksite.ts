@@ -5,8 +5,8 @@ export class Worksite{
     public customer! : string;
     public address! : string;
     public city! : string;
-    public startDate! : Date;
-    public completedDate! : Date;
+    public startDate! : Date | undefined;
+    public completedDate! : Date | undefined;
     public workstiteStatus! : WorkstiteStatus;
     public manager! : string;
     public notes! : string;
