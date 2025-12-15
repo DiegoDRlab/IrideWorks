@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-<form #worksiteForm="ngForm" (ngSubmit)="save()">
+<form #worksiteForm="ngForm" (ngSubmit)="save(fileInput)">
       <ion-item>
         <ion-label position="stacked">Nome</ion-label>
         <ion-input required [(ngModel)]="worksite.name" name="name"></ion-input>
@@ -28,7 +28,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Immagine</ion-label>
-        <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+        <input type="file" accept="image/*" (change)="onImageSelected($event)" #fileInput/>
       </ion-item>
       <ion-item *ngIf="worksite.imageBase64">
   <ion-thumbnail slot="start">

@@ -1,7 +1,9 @@
 <ion-header class="header-image">
   <ion-toolbar color="transparent">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      @if(!toSave){
+        <ion-back-button defaultHref="/"></ion-back-button>
+      }
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button color="danger" class="ion-margin-top" (click)="confirmDelete()">
@@ -52,15 +54,16 @@
   </ion-item>
 
   <ion-list>
-    <ion-item *ngFor="let activity of worksite?.activities">
-      <ion-checkbox slot="start" [(ngModel)]="activity.completed"></ion-checkbox>
+    <ion-item *ngFor="let activity of orderedActivities"
+  [class.completed]="activity.completed">
+      <ion-checkbox slot="start" [(ngModel)]="activity.completed" (ngModelChange)="toSave = true"></ion-checkbox>
 
-      <ion-label>
+      <ion-label class="activity-label">
         <h2>{{ activity.name }}</h2>
         <p>{{ activity.description }}</p>
-        <p><strong>Dal:</strong> {{ activity.startDate | date }}
+        <!-- <p><strong>Dal:</strong> {{ activity.startDate | date }}
           <strong>Al:</strong> {{ activity.endDate | date }}
-        </p>
+        </p> -->
       </ion-label>
 
       <ion-button fill="clear" slot="end" (click)="editActivity(activity)">
@@ -72,3 +75,14 @@
   <div class="space"></div>
 
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button
+      expand="block"
+      [disabled]="!toSave"
+      (click)="saveChanges()">
+      Conferma modifiche
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -46,3 +46,20 @@ ion-card {
 .space {
   height: 40px;
 }
+
+.activity-label {
+  white-space: normal;
+
+  p {
+    white-space: pre-line;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+.completed {
+  opacity: 0.5;
+  p{
+    text-decoration: line-through;
+  }
+}

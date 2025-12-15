@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEnca
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, NavController, ToastController  } from '@ionic/angular';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonBackButton, IonButtons, IonCard,
-   IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem , IonIcon, IonList, IonCheckbox, IonChip} from '@ionic/angular/standalone';
+   IonCardHeader, IonCardContent, IonCardTitle, IonFooter, IonLabel, IonItem , IonIcon, IonList, IonCheckbox, IonChip} from '@ionic/angular/standalone';
 import { Activity, Worksite, WorkstiteStatus } from '../models/worksite';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { WorksiteService } from '../services/worksite.service';
   selector: 'app-worksite-details',
   templateUrl: './worksite-details.page.html',
   styleUrls: ['./worksite-details.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonChip, IonContent, IonButton, IonBackButton, IonButtons, IonCard,
+  imports: [IonHeader, IonToolbar, IonTitle, IonFooter, IonChip, IonContent, IonButton, IonBackButton, IonButtons, IonCard,
     IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem, IonIcon, IonList, IonCheckbox, CommonModule, FormsModule
   ],
   providers:[ModalController],
@@ -25,6 +25,7 @@ import { WorksiteService } from '../services/worksite.service';
 export class WorksiteDetailsPage implements OnInit {
   
   public worksite!: Worksite;
+  public toSave = false;
 
   constructor(
     private router : Router,
@@ -43,6 +44,7 @@ ngOnInit() {
   const nav = this.router.getCurrentNavigation();
   if (nav?.extras?.state) {
     this.worksite = nav.extras.state['worksite'];
+    this.toSave = false;
     this.cdr.markForCheck();
   }
 }
@@ -60,6 +62,16 @@ getStatusColor(status: string): string {
   }
 }
 
+get orderedActivities() {
+  if (!this.worksite?.activities) {
+    return [];
+  }
+
+  return [...this.worksite.activities].sort(
+    (a, b) => Number(a.completed) - Number(b.completed)
+  );
+}
+
 changeWorksiteStatus() {
   if (!this.worksite) return;
   switch(this.worksite.workstiteStatus) {
@@ -72,11 +84,19 @@ changeWorksiteStatus() {
     default:
       this.worksite.workstiteStatus = WorkstiteStatus.Incoming;
   }
-  this.worksiteService.updateWorksite(this.worksite);
+  this.toSave = true;
+  //this.worksiteService.updateWorksite(this.worksite);
   this.cdr.markForCheck();
 }
 
+saveChanges() {
+  this.toSave = false;
+  this.worksiteService.updateWorksite(this.worksite);
+  this.navCtrl.back();
+}
+
   async addActivity() {
+  this.toSave = true;
     const alert = await this.alertCtrl.create({
       header: 'Nuova Attività',
       inputs: [
@@ -96,7 +116,7 @@ changeWorksiteStatus() {
             (newAct as any).completed = false;
 
             this.worksite.activities.push(newAct);
-            this.worksiteService.updateWorksite(this.worksite);
+            //this.worksiteService.updateWorksite(this.worksite);
             this.cdr.markForCheck();
           }
         }
@@ -107,6 +127,7 @@ changeWorksiteStatus() {
   }
 
   async editActivity(activity: Activity) {
+  this.toSave = true;
     const alert = await this.alertCtrl.create({
       header: 'Modifica Attività',
       inputs: [
@@ -120,7 +141,7 @@ changeWorksiteStatus() {
           handler: (res) => {
             activity.name = res.name;
             activity.description = res.description;
-            this.worksiteService.updateWorksite(this.worksite);
+            //this.worksiteService.updateWorksite(this.worksite);
           }
         }
       ]
