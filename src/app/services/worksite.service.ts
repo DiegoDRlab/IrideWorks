@@ -1,6 +1,14 @@
-import { Injectable } from '@angular/core';
-import { Database, ref, set, push, onValue, update, remove } from '@angular/fire/database';
-import { Observable } from 'rxjs';
+import { Injectable, EnvironmentInjector, runInInjectionContext } from '@angular/core';
+import {
+  Database,
+  ref,
+  set,
+  push,
+  update,
+  remove,
+  get
+} from '@angular/fire/database';
+import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Worksite, WorkstiteStatus } from '../models/worksite';
 
@@ -11,9 +19,15 @@ export class WorksiteService {
 
   private basePath = 'worksites';
 
-  constructor(private db: Database) {}
+  constructor(
+    private db: Database,
+    private injector: EnvironmentInjector
+  ) {}
 
-  /** 🔹 Converte dati Firebase in Worksite */
+  /* ============================
+     🔹 MAPPER
+     ============================ */
+
   private mapFirebaseToWorksite(key: string, data: any): Worksite {
     return {
       id: key,
@@ -28,78 +42,104 @@ export class WorksiteService {
       manager: data.manager,
       notes: data.notes,
       imageBase64: data.imageBase64,
-      activities: data.activities ? data.activities : []
+      activities: data.activities ?? []
     };
   }
 
-  /** 🔹 Ottieni tutti i cantieri (realtime) */
-  public getWorksite(): Observable<Worksite[]> {
-    const worksitesRef = ref(this.db, this.basePath);
+  /* ============================
+     🔹 READ (ONE SHOT)
+     ============================ */
 
-    return new Observable(sub => {
-      onValue(worksitesRef, snapshot => {
-        const data = snapshot.val();
-        const list: Worksite[] = data
-          ? Object.keys(data).map(key => this.mapFirebaseToWorksite(key, data[key]))
-          : [];
-        sub.next(list);
-      });
+  /** Tutti i cantieri (NO realtime) */
+  public getWorksite(): Observable<Worksite[]> {
+    return runInInjectionContext(this.injector, () => {
+      const worksitesRef = ref(this.db, this.basePath);
+
+      return from(get(worksitesRef)).pipe(
+        map(snapshot => {
+          const data = snapshot.val();
+          return data
+            ? Object.keys(data).map(key =>
+                this.mapFirebaseToWorksite(key, data[key])
+              )
+            : [];
+        })
+      );
     });
   }
 
-  /** 🔹 Filtri per status */
-  public getOngoingWorksite(): Observable<Worksite[]> {
-    return this.getWorksite().pipe(
-      map(list => list.filter(w => w.workstiteStatus === WorkstiteStatus.Ongoing))
-    );
-  }
-
+  /** Cantieri in arrivo */
   public getIncomingWorksite(): Observable<Worksite[]> {
     return this.getWorksite().pipe(
       map(list => list.filter(w => w.workstiteStatus === WorkstiteStatus.Incoming))
     );
   }
 
+  /** Cantieri in corso */
+  public getOngoingWorksite(): Observable<Worksite[]> {
+    return this.getWorksite().pipe(
+      map(list => list.filter(w => w.workstiteStatus === WorkstiteStatus.Ongoing))
+    );
+  }
+
+  /** Cantieri completati */
   public getCompletedWorksite(): Observable<Worksite[]> {
     return this.getWorksite().pipe(
       map(list => list.filter(w => w.workstiteStatus === WorkstiteStatus.Completed))
     );
   }
 
-  /** 🔹 Aggiungi nuovo worksite */
+  /* ============================
+     🔹 WRITE
+     ============================ */
+
+  /** Aggiungi nuovo worksite */
   public addWorksite(worksite: Worksite): Promise<void> {
-    const listRef = ref(this.db, this.basePath);
-    const newRef = push(listRef);
+    return runInInjectionContext(this.injector, () => {
+      const listRef = ref(this.db, this.basePath);
+      const newRef = push(listRef);
 
-    // assegna id generato da Firebase
-    worksite.id = newRef.key!;
+      worksite.id = newRef.key!;
 
-    return set(newRef, {
-      ...worksite,
-      startDate: worksite.startDate ? new Date(worksite.startDate).toISOString() : null,
-      completedDate: worksite.completedDate ? new Date(worksite.completedDate).toISOString() : null
+      return set(newRef, {
+        ...worksite,
+        startDate: worksite.startDate
+          ? worksite.startDate.toISOString()
+          : null,
+        completedDate: worksite.completedDate
+          ? worksite.completedDate.toISOString()
+          : null
+      });
     });
   }
 
-  /** 🔹 Aggiorna worksite esistente */
+  /** Aggiorna worksite */
   public updateWorksite(worksite: Worksite): Promise<void> {
     if (!worksite.id) {
-      console.warn('Worksite senza ID non può essere aggiornato');
+      console.warn('Worksite senza ID');
       return Promise.resolve();
     }
 
-    const worksiteRef = ref(this.db, `${this.basePath}/${worksite.id}`);
+    return runInInjectionContext(this.injector, () => {
+      const worksiteRef = ref(this.db, `${this.basePath}/${worksite.id}`);
 
-    return update(worksiteRef, {
-      ...worksite,
-      startDate: worksite.startDate ? new Date(worksite.startDate).toISOString() : null,
-      completedDate: worksite.completedDate ? new Date(worksite.completedDate).toISOString() : null
+      return update(worksiteRef, {
+        ...worksite,
+        startDate: worksite.startDate
+          ? worksite.startDate.toISOString()
+          : null,
+        completedDate: worksite.completedDate
+          ? worksite.completedDate.toISOString()
+          : null
+      });
     });
   }
 
-  /** 🔹 Elimina worksite */
+  /** Elimina worksite */
   public deleteWorksite(id: string): Promise<void> {
-    const worksiteRef = ref(this.db, `${this.basePath}/${id}`);
-    return remove(worksiteRef);
+    return runInInjectionContext(this.injector, () => {
+      const worksiteRef = ref(this.db, `${this.basePath}/${id}`);
+      return remove(worksiteRef);
+    });
   }
 }

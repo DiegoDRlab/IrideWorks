@@ -16,25 +16,25 @@ import { addIcons } from 'ionicons';
   standalone: true
 })
 
-export class WorksiteCardComponent  implements OnInit {
+export class WorksiteCardComponent implements OnInit {
 
   @Input()
-  public worksite : Worksite | undefined;
+  public worksite: Worksite | undefined;
 
   public expanded = false;
 
-  constructor(private router : Router, private cdr : ChangeDetectorRef) { }
+  constructor(private router: Router, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    addIcons({arrowForwardOutline,chevronForwardOutline, addCircleOutline});
+    addIcons({ arrowForwardOutline, chevronForwardOutline, addCircleOutline });
   }
 
-public goToDetailPage(worksite: Worksite) {
-  this.cdr.markForCheck();
-  this.router.navigate(
-    ['worksite-details'],
-    { state: { worksite } }
-  );
-  this.cdr.markForCheck();
-}
+  public goToDetailPage(worksite: Worksite) {
+    this.cdr.markForCheck();
+    this.router.navigate(
+      ['worksite-details'],
+      { state: { worksite } }
+    );
+    this.cdr.markForCheck();
+  }
 }
