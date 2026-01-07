@@ -1,5 +1,9 @@
 <div class="worksite-card" (click)="goToDetailPage(worksite!)" [ngClass]="{'expanded':expanded}">
-  <img class="img-zoom" [src]="worksite!.imageBase64" alt="Logo" />
+  <img
+  class="img-zoom"
+  [src]="worksite?.imageBase64 ? worksite!.imageBase64 : 'assets/icon/196.png'"
+  alt="Logo"
+/>
   <div style="display: flex; flex-direction: column; padding: 20px 40px 20px 20px;">
     <div class="worksite-title">
       {{worksite?.name}}

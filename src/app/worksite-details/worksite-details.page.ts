@@ -98,9 +98,9 @@ saveChanges() {
   async addActivity() {
   this.toSave = true;
     const alert = await this.alertCtrl.create({
-      header: 'Nuova Attività',
+      header: 'Nuovo Materiale',
       inputs: [
-        { name: 'name', type: 'text', placeholder: 'Nome attività' },
+        { name: 'name', type: 'text', placeholder: 'Nome materiale' },
         { name: 'description', type: 'textarea', placeholder: 'Descrizione' },
       ],
       buttons: [
@@ -129,7 +129,7 @@ saveChanges() {
   async editActivity(activity: Activity) {
   this.toSave = true;
     const alert = await this.alertCtrl.create({
-      header: 'Modifica Attività',
+      header: 'Modifica Materiale',
       inputs: [
         { name: 'name', type: 'text', value: activity.name },
         { name: 'description', type: 'textarea', value: activity.description },
