@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonLabel, IonItem,
   IonSelect, IonSelectOption, IonButton, IonList, IonInput, IonTextarea, IonDatetime, IonThumbnail, IonToast } from '@ionic/angular/standalone';
 import { Worksite, WorkstiteStatus } from '../models/worksite';
 import { WorksiteService } from '../services/worksite.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add',
@@ -19,25 +20,51 @@ export class AddPage implements OnInit {
   public worksite: Worksite = new Worksite();
   public statuses = Object.values(WorkstiteStatus);
   public isToastOpen = false;
+  public isEdit = false;
 
-  constructor(private worksiteService : WorksiteService, private cdr : ChangeDetectorRef) { }
+  constructor(private worksiteService : WorksiteService, private cdr : ChangeDetectorRef,
+    private router: Router) { }
 
   ngOnInit() {
+    const nav = this.router.getCurrentNavigation();
+    const state = nav?.extras?.state as any;
+
+    if (state?.worksite) {
+      this.isEdit = !!state.isEdit;
+      this.worksite = { ...state.worksite };
+      this.worksite.activities = [...(state.worksite.activities ?? [])];
+      if (this.worksite.startDate) this.worksite.startDate = new Date(this.worksite.startDate as any);
+      if (this.worksite.completedDate) this.worksite.completedDate = new Date(this.worksite.completedDate as any);
+      this.cdr.markForCheck();
+    }
   }
 
-  save(file : any) {  
-  file.value = '';  
-    this.worksite.startDate = this.worksite.startDate
-    ? new Date(this.worksite.startDate)
+  async save(file: any) {
+  file.value = '';
+
+  this.worksite.startDate = this.worksite.startDate
+    ? new Date(this.worksite.startDate as any)
     : undefined;
-    this.worksite.completedDate = this.worksite.completedDate
-    ? new Date(this.worksite.completedDate)
+
+  this.worksite.completedDate = this.worksite.completedDate
+    ? new Date(this.worksite.completedDate as any)
     : undefined;
-    this.worksiteService.addWorksite(this.worksite);
-    this.isToastOpen= true;
-    this.worksite = new Worksite();
-    this.cdr.markForCheck();
+
+  if (this.isEdit) {
+    await this.worksiteService.updateWorksite(this.worksite);
+
+    // torna alla details e ripassa il worksite aggiornato
+    this.router.navigate(['/worksite-details'], {
+      state: { worksite: this.worksite }
+    });
+    return;
   }
+
+  await this.worksiteService.addWorksite(this.worksite);
+  this.isToastOpen = true;
+  this.worksite = new Worksite();
+  this.cdr.markForCheck();
+}
 
   setOpen(isOpen: boolean) {
     this.isToastOpen = isOpen;

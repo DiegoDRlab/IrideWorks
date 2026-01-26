@@ -40,13 +40,29 @@ export class WorksiteDetailsPage implements OnInit {
   ) {}
 
 ngOnInit() {
-    addIcons({createOutline, addCircleOutline});
+  addIcons({createOutline, addCircleOutline});
+}
+
+ionViewWillEnter() {
   const nav = this.router.getCurrentNavigation();
-  if (nav?.extras?.state) {
-    this.worksite = nav.extras.state['worksite'];
+
+  // Quando torni con BACK spesso nav è null, quindi:
+  const state = nav?.extras?.state ?? history.state;
+
+  if (state?.worksite) {
+    this.worksite = state.worksite;
     this.toSave = false;
     this.cdr.markForCheck();
   }
+}
+
+editWorksite() {
+  this.router.navigate(['/add'], {
+    state: {
+      worksite: this.worksite,
+      isEdit: true
+    }
+  });
 }
 
 getStatusColor(status: string): string {

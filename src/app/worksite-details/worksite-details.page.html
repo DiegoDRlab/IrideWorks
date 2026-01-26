@@ -2,10 +2,14 @@
   <ion-toolbar color="transparent">
     <ion-buttons slot="start">
       @if(!toSave){
-        <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
       }
     </ion-buttons>
     <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="editWorksite()">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+
       <ion-button color="danger" class="ion-margin-top" (click)="confirmDelete()">
         Elimina
       </ion-button>
@@ -16,14 +20,11 @@
     <h1>{{ worksite?.name }}</h1>
     <p>{{ worksite?.descriription }}</p>
   </div>
-<div
-  class="header-bg"
-  [style.background-image]="
+  <div class="header-bg" [style.background-image]="
     worksite?.imageBase64
       ? 'url(' + worksite!.imageBase64 + ')'
       : 'url(assets/icon/196.png)'
-  "
-></div>
+  "></div>
 </ion-header>
 
 <ion-content>
@@ -39,10 +40,10 @@
       <p><strong>Data inizio:</strong> {{ worksite?.startDate | date }}</p>
       <p><strong>Data completamento:</strong> {{ worksite?.completedDate | date }}</p>
       <p><strong>Stato:</strong>
-  <ion-chip [color]="getStatusColor(worksite!.workstiteStatus)">
-    <ion-label>{{ worksite?.workstiteStatus }}</ion-label>
-  </ion-chip>
-</p>
+<ion-chip *ngIf="worksite?.workstiteStatus as s" [color]="getStatusColor(s)">
+  <ion-label>{{ s }}</ion-label>
+</ion-chip>
+      </p>
       <p><strong>Responsabile:</strong> {{ worksite?.manager }}</p>
       <p><strong>Note:</strong> {{ worksite?.notes }}</p>
       <ion-button expand="block" size="small" color="secondary" (click)="changeWorksiteStatus()">
@@ -60,8 +61,7 @@
   </ion-item>
 
   <ion-list>
-    <ion-item *ngFor="let activity of orderedActivities"
-  [class.completed]="activity.completed">
+    <ion-item *ngFor="let activity of orderedActivities" [class.completed]="activity.completed">
       <!-- <ion-checkbox slot="start" [(ngModel)]="activity.completed" (ngModelChange)="toSave = true"></ion-checkbox> -->
 
       <ion-label class="activity-label">
@@ -84,10 +84,7 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button
-      expand="block"
-      [disabled]="!toSave"
-      (click)="saveChanges()">
+    <ion-button expand="block" [disabled]="!toSave" (click)="saveChanges()">
       Conferma modifiche
     </ion-button>
   </ion-toolbar>

@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Nuovo Cantiere</ion-title>
+    <ion-title>{{ isEdit ? 'Modifica Cantiere' : 'Nuovo Cantiere' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -58,7 +58,10 @@
         <ion-label position="stacked">Note</ion-label>
         <ion-textarea [(ngModel)]="worksite.notes" name="notes"></ion-textarea>
       </ion-item>
-    <ion-button expand="block" type="submit" class="ion-margin-top">Salva</ion-button>
+    
+    <ion-button expand="block" type="submit" class="ion-margin-top">
+      {{ isEdit ? 'Salva modifiche' : 'Salva' }}
+    </ion-button>
     </form>
     <ion-toast
     [isOpen]="isToastOpen"

@@ -125,6 +125,7 @@ export class WorksiteService {
 
       return update(worksiteRef, {
         ...worksite,
+        imageBase64: worksite.imageBase64 ?? null,
         startDate: worksite.startDate
           ? worksite.startDate.toISOString()
           : null,
